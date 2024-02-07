@@ -16,40 +16,42 @@ function App() {
         console.log(error);
     }
   }
-const createTask = async ()=> {
-  try {
+  const createTask = async ()=> {
+    try {
+        await supabase
+        .from("tasks")
+        .insert({
+          task: task,
+        })
+        .single()
+      getTask()
+      setTask("")
+    } catch (error) {
+        console.log(error);
+    }
+
+  }
+  const deleteTask = async ({id})=> {
+    try {
       await supabase
-      .from("tasks")
-      .insert({
-        task: task,
-      })
-      .single()
-    getTask()
+        .from("tasks")
+        .delete()
+        .eq("id", id)
+        getTask()
   } catch (error) {
-      console.log(error);
+    console.log(error);
+
   }
 
-}
-const deleteTask = async ({id})=> {
-  try {
-    await supabase
-      .from("tasks")
-      .delete()
-      .eq("id", id)
-      getTask()
-} catch (error) {
-  console.log(error);
-
-}
-
-}
+  }
   useEffect(()=>{
     getTask()
   },[])
+
   return (
     <>
     <div className="formulario">
-      <input type="text" placeholder='tareas..' onChange={(e)=>setTask(e.target.value)}/>
+      <input type="text" placeholder='tareas..' value={task} onChange={(e)=>setTask(e.target.value)}/>
       <button onClick={createTask}>
         Crear
       </button>
