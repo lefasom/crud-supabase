@@ -3,6 +3,7 @@ import './App.css'
 import { supabase } from './supabaseClient'
 function App() {
   const [tabla, setTabla] = useState([])
+  const [info, setInfo] = useState({})
   const [task, setTask] = useState("")
 
   const getTask = async ()=> {
@@ -31,6 +32,18 @@ function App() {
     }
 
   }
+  const relation = async ({id})=> {
+    try {
+      const { data } = await supabase
+        .from("tasks_info")
+        .select('*')
+        .eq("id_tarea",id)
+      setInfo(data)
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
   const deleteTask = async ({id})=> {
     try {
       await supabase
@@ -38,11 +51,10 @@ function App() {
         .delete()
         .eq("id", id)
         getTask()
-  } catch (error) {
-    console.log(error);
+    } catch (error) {
+      console.log(error);
 
-  }
-
+    }
   }
   useEffect(()=>{
     getTask()
@@ -50,6 +62,9 @@ function App() {
 
   return (
     <>
+    <pre>
+      {JSON.stringify(info)}
+    </pre>
     <div className="formulario">
       <input type="text" placeholder='tareas..' value={task} onChange={(e)=>setTask(e.target.value)}/>
       <button onClick={createTask}>
@@ -64,12 +79,13 @@ function App() {
         </tr>
     </thead>
     <tbody>
-    {tabla.map((val)=>{
+    {tabla?.map((val)=>{
       return(
         <tr key={val.id}>
             <td>{val.task}</td>
             <td>
               <button onClick={()=>deleteTask({id:val.id})}>x</button>
+              <button onClick={()=>relation({id:val.id})}>ver</button>
             </td>
         </tr>
     )})}  
